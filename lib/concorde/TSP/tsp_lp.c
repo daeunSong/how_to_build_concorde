@@ -1542,52 +1542,52 @@ CLEANUP:
 
 int CCtsp_update_result (CCtsp_lp *lp)
 {
-    CCtsp_lp_result new;
+    CCtsp_lp_result new_;
     int i;
 
-    if (CClp_objval (lp->lp, &new.lb)) {
+    if (CClp_objval (lp->lp, &new_.lb)) {
         return 1;
     }
-    new.ub = lp->upperbound;
-    new.elist = CC_SAFE_MALLOC (lp->graph.ecount*2, int);
-    if (!new.elist) return 1;
-    new.x = CC_SAFE_MALLOC (lp->graph.ecount, double);
-    if (!new.x) {
-        CC_FREE (new.elist, int);
+    new_.ub = lp->upperbound;
+    new_.elist = CC_SAFE_MALLOC (lp->graph.ecount*2, int);
+    if (!new_.elist) return 1;
+    new_.x = CC_SAFE_MALLOC (lp->graph.ecount, double);
+    if (!new_.x) {
+        CC_FREE (new_.elist, int);
         return 1;
     }
-    new.rc = CC_SAFE_MALLOC (lp->graph.ecount, double);
-    if (!new.rc) {
-        CC_FREE (new.x, double);
-        CC_FREE (new.elist, int);
-        return 1;
-    }
-
-    if (CClp_x (lp->lp, new.x)) {
-        CC_FREE (new.rc, double);
-        CC_FREE (new.x, double);
-        CC_FREE (new.elist, int);
+    new_.rc = CC_SAFE_MALLOC (lp->graph.ecount, double);
+    if (!new_.rc) {
+        CC_FREE (new_.x, double);
+        CC_FREE (new_.elist, int);
         return 1;
     }
 
-    if (CClp_rc (lp->lp, new.rc)) {
-        CC_FREE (new.rc, double);
-        CC_FREE (new.x, double);
-        CC_FREE (new.elist, int);
+    if (CClp_x (lp->lp, new_.x)) {
+        CC_FREE (new_.rc, double);
+        CC_FREE (new_.x, double);
+        CC_FREE (new_.elist, int);
         return 1;
     }
 
-    new.ecount = lp->graph.ecount;
-    for (i=0; i<new.ecount; i++) {
-        new.elist[2*i] = lp->graph.edges[i].ends[0];
-        new.elist[2*i+1] = lp->graph.edges[i].ends[1];
+    if (CClp_rc (lp->lp, new_.rc)) {
+        CC_FREE (new_.rc, double);
+        CC_FREE (new_.x, double);
+        CC_FREE (new_.elist, int);
+        return 1;
+    }
+
+    new_.ecount = lp->graph.ecount;
+    for (i=0; i<new_.ecount; i++) {
+        new_.elist[2*i] = lp->graph.edges[i].ends[0];
+        new_.elist[2*i+1] = lp->graph.edges[i].ends[1];
     }
 
     CC_IFFREE (lp->result.elist, int);
     CC_IFFREE (lp->result.x, double);
     CC_IFFREE (lp->result.rc, double);
 
-    lp->result = new;
+    lp->result = new_;
 
     return 0;
 }
@@ -2295,7 +2295,7 @@ int CCtsp_add_cut (CCtsp_lp *lp, CCtsp_lpcut_in *d, CCtsp_lprow *cr)
     int nzlist;
     CCtsp_lpgraph *g = &lp->graph;
     int saved;
-    CCtsp_lpcut new;
+    CCtsp_lpcut new_;
     int rval = 0;
     int newloc;
     int rhs;
@@ -2303,54 +2303,54 @@ int CCtsp_add_cut (CCtsp_lp *lp, CCtsp_lpcut_in *d, CCtsp_lprow *cr)
 
     assert (d->branch == 'G' || d->branch != 0);
 
-    CCtsp_init_lpcut (&new);
+    CCtsp_init_lpcut (&new_);
 
-    new.rhs         = d->rhs;
-    new.sense       = d->sense;
-    new.branch      = d->branch;
-    rval = CCtsp_register_cliques (&lp->cuts, d, &new);
+    new_.rhs         = d->rhs;
+    new_.sense       = d->sense;
+    new_.branch      = d->branch;
+    rval = CCtsp_register_cliques (&lp->cuts, d, &new_);
     CCcheck_rval (rval, "CCtsp_register_cliques failed");
-    rval = CCtsp_register_dominos (&lp->cuts, d, &new);
+    rval = CCtsp_register_dominos (&lp->cuts, d, &new_);
     CCcheck_rval (rval, "CCtsp_register_dominos failed");
 
     nzlist = CCtsp_lpcut_in_nzlist (g, d);
-    rval = CCtsp_qsparsify (&lp->sparsifier, g, &nzlist, &new.modcount,
-            &new.mods, &saved);
+    rval = CCtsp_qsparsify (&lp->sparsifier, g, &nzlist, &new_.modcount,
+            &new_.mods, &saved);
     if (rval) {
         fprintf (stderr, "CCtsp_qsparsify failed\n");
-        CCtsp_unregister_cliques (&lp->cuts, &new);
-        CCtsp_unregister_dominos (&lp->cuts, &new);
-        CC_IFFREE (new.mods, CCtsp_sparser);
+        CCtsp_unregister_cliques (&lp->cuts, &new_);
+        CCtsp_unregister_dominos (&lp->cuts, &new_);
+        CC_IFFREE (new_.mods, CCtsp_sparser);
         clear_nzlist (g, nzlist);
         goto CLEANUP;
     }
-    new.age = CCtsp_NEWCUT_AGE;
-    rval = CCtsp_copy_skeleton (&d->skel, &new.skel);
+    new_.age = CCtsp_NEWCUT_AGE;
+    rval = CCtsp_copy_skeleton (&d->skel, &new_.skel);
     if (rval) {
         fprintf (stderr, "CCtsp_copy_skeleton failed\n");
-        CCtsp_unregister_cliques (&lp->cuts, &new);
-        CCtsp_unregister_dominos (&lp->cuts, &new);
-        CC_IFFREE (new.mods, CCtsp_sparser);
+        CCtsp_unregister_cliques (&lp->cuts, &new_);
+        CCtsp_unregister_dominos (&lp->cuts, &new_);
+        CC_IFFREE (new_.mods, CCtsp_sparser);
         clear_nzlist (g, nzlist);
         goto CLEANUP;
     }
         
 
-    newloc = CCtsp_add_cut_to_cutlist (&lp->cuts, &new);
+    newloc = CCtsp_add_cut_to_cutlist (&lp->cuts, &new_);
     if (newloc == -1) {
         fprintf (stderr, "CCtsp_add_cut_to_cutlist failed\n");
-        CCtsp_unregister_cliques (&lp->cuts, &new);
-        CCtsp_unregister_dominos (&lp->cuts, &new);
-        CC_IFFREE (new.mods, CCtsp_sparser);
-        CCtsp_free_skeleton (&new.skel);
+        CCtsp_unregister_cliques (&lp->cuts, &new_);
+        CCtsp_unregister_dominos (&lp->cuts, &new_);
+        CC_IFFREE (new_.mods, CCtsp_sparser);
+        CCtsp_free_skeleton (&new_.skel);
         clear_nzlist (g, nzlist);
         rval = 1;  goto CLEANUP;
     }
-    rhs = new.rhs;
-    for (i=0; i<new.modcount; i++) {
-        rhs += 2*(((int) new.mods[i].mult) - 128);
+    rhs = new_.rhs;
+    for (i=0; i<new_.modcount; i++) {
+        rhs += 2*(((int) new_.mods[i].mult) - 128);
     }
-    rval = CCtsp_add_nzlist_to_lp (lp, nzlist, rhs, new.sense, cr);
+    rval = CCtsp_add_nzlist_to_lp (lp, nzlist, rhs, new_.sense, cr);
     if (rval) {
         fprintf (stderr, "CCtsp_add_nzlist_to_lp failed\n");
         CCtsp_delete_cut_from_cutlist (&lp->cuts, newloc);

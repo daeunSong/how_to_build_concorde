@@ -97,7 +97,7 @@ static int
     grow_handle (CCtsp_lpgraph *g, double *x, CCtsp_lpclique *handle,
         int nteeth, CCtsp_lpclique **teeth, CCtsp_lpclique **newhandle,
         int *marks),
-    add_or_subtract_nodes (CCtsp_lpclique *old, CCtsp_lpclique *new,
+    add_or_subtract_nodes (CCtsp_lpclique *old, CCtsp_lpclique *new_,
         int icount, int *ind, int add_or_sub);
 
 
@@ -1065,7 +1065,7 @@ CLEANUP:
     return rval;
 }
 
-static int add_or_subtract_nodes (CCtsp_lpclique *old, CCtsp_lpclique *new,
+static int add_or_subtract_nodes (CCtsp_lpclique *old, CCtsp_lpclique *new_,
         int icount, int *ind, int add_or_sub)
 {
     int *ar = (int *) NULL;
@@ -1084,13 +1084,13 @@ static int add_or_subtract_nodes (CCtsp_lpclique *old, CCtsp_lpclique *new,
         }
     }
     if (add_or_sub == 0) {
-        rval = CCtsp_add_nodes_to_lpclique (old, new, count, ar);
+        rval = CCtsp_add_nodes_to_lpclique (old, new_, count, ar);
         if (rval) {
             fprintf (stderr, "CCtsp_add_nodes_to_lpclique failed\n");
             goto CLEANUP;
         }
     } else {
-        rval = CCtsp_delete_nodes_from_lpclique (old, new, count, ar);
+        rval = CCtsp_delete_nodes_from_lpclique (old, new_, count, ar);
         if (rval) {
             fprintf (stderr, "CCtsp_delete_nodes_from_lpclique failed\n");
             goto CLEANUP;

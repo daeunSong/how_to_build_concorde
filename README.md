@@ -13,14 +13,7 @@ This repository presents a brief instruction on how to build [Concorde](http://w
     `DIR` is a full path to the `/lib/qsopt` directory of the current repository. This will create `concorde.h` and `concorde.a` file.
 
 
-2. Fix `concorde.h` file
-   
-   The file contains some identifiers named *new* and *class*, which are reserved names in C++. Fix the names to different ones, such as *new_* and *class_*. 
-   
-   Be careful not to *find & replace* all occurrences, as it might get you in trouble.  
-
-
-3. Build and run the project 
+2. Build and run the project 
 
    ```sh
    cd ../..
@@ -30,6 +23,9 @@ This repository presents a brief instruction on how to build [Concorde](http://w
    ./concordeTest
    ```
 
+### Technical Notes
+
+The source of Concorde contained in `/lib/concorde` directory differs from the original source. The original source code contains some identifiers named `new` and `class`, which are the reserved names in C++. Please keep in mind that you need to fix them if you wish to build from the original source by yourself. 
 
 ### References
 - Concorde solver installation and use ([link](https://www.researchgate.net/publication/324485167_Concorde_solver_installation_and_use))

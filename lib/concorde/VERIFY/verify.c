@@ -22,13 +22,13 @@
 /*    MISSING                                                               */
 /*                                                                          */
 /*  int CCverify_classify (CCtsp_lpcut_in *cut, int check_types,            */
-/*      CCverify_cutclass *class);                                          */
+/*      CCverify_cutclass *class_);                                          */
 /*    MISSING                                                               */
 /*                                                                          */
-/*  void CCverify_initcutclass (CCverify_cutclass *class)                   */
+/*  void CCverify_initcutclass (CCverify_cutclass *class_)                   */
 /*    MISSING                                                               */
 /*                                                                          */
-/*  void CCverify_freecutclass (CCverify_cutclass *class)                   */
+/*  void CCverify_freecutclass (CCverify_cutclass *class_)                   */
 /*    MISSING                                                               */
 /*                                                                          */
 /****************************************************************************/
@@ -115,11 +115,11 @@ static int
     verify_atom_lists (atom_info *atoms),
     find_clique_atom (atom_info *atoms, int cnum, int anum),
     find_atom_clique (atom_info *atoms, int anum, int cnum),
-    verify_subtour (atom_info *atoms, CCverify_cutclass *class),
+    verify_subtour (atom_info *atoms, CCverify_cutclass *class_),
     atom_singleton (atom *a, vclique *cliquelist, int c, int nflipped),
     atom_doubleton (atom *a, vclique *cliquelist, int c1, int c2,
         int nflipped),
-    verify_chvatal_comb (atom_info *atoms, CCverify_cutclass *class),
+    verify_chvatal_comb (atom_info *atoms, CCverify_cutclass *class_),
     verify_tooth (atom_info *atoms, int tooth, int handle, int nflipped),
     build_binesting (atom_info *atoms),
     build_cross_cliques (atom_info *atoms, int cliq),
@@ -128,7 +128,7 @@ static int
     nest_clique (atom_info *atoms, int cliqnum, vclique *family),
     clique_complement (atom_info *atoms, vclique *cliq, int *catomcount,
         int **catomlist),
-    verify_star (atom_info *atoms, int handnum, CCverify_cutclass *class),
+    verify_star (atom_info *atoms, int handnum, CCverify_cutclass *class_),
     verify_bipartition (atom_info *atoms, int handnum),
     flip_disjoint (vclique *family),
     flip_disjoint_one (vclique *family),
@@ -142,7 +142,7 @@ static int
     build_complete_graph (int nodecount, graph **p_g),
     verify_rhs (atom_info *atoms, graph *g),
     tooth_has_cavity (atom_info *atoms, vclique *c, int nflipped),
-    build_cutclass (CCverify_cutclass *class, int ncliques, int nfamilies);
+    build_cutclass (CCverify_cutclass *class_, int ncliques, int nfamilies);
 
 static void
     free_atom_info (atom_info *atoms),
@@ -764,23 +764,23 @@ static int find_atom_clique (atom_info *atoms, int anum, int cnum)
     return 1;
 }
 
-static int verify_subtour (atom_info *atoms, CCverify_cutclass *class)
+static int verify_subtour (atom_info *atoms, CCverify_cutclass *class_)
 {
     int rval;
     if (atoms->cliquecount == 1 && atoms->atomcount == 2 &&
         atoms->rhs == 2 && atoms->sense == 'G') {
-        if (class != (CCverify_cutclass *) NULL) {
-            rval = build_cutclass (class, 1, 1);
+        if (class_ != (CCverify_cutclass *) NULL) {
+            rval = build_cutclass (class_, 1, 1);
             if (rval) {
                 fprintf (stderr, "build_cutclass failed\n");
                 return rval;
             }
-            class->type = CC_TYPE_SUBTOUR;
-            class->nhandles = 1;
-            class->nfamilies = 1;
-            class->cliques[0] = 0;
-            class->inverted[0] = 0;
-            class->family_start[0] = 0;
+            class_->type = CC_TYPE_SUBTOUR;
+            class_->nhandles = 1;
+            class_->nfamilies = 1;
+            class_->cliques[0] = 0;
+            class_->inverted[0] = 0;
+            class_->family_start[0] = 0;
         }
         return 0;
     } else {
@@ -858,7 +858,7 @@ static int atom_doubleton (atom *a, vclique *cliquelist, int c1, int c2,
  * (7) each tooth contains exactly 2 atoms, one of just the tooth, and one
  *     of just the tooth and the handle
  */
-static int verify_chvatal_comb (atom_info *atoms, CCverify_cutclass *class)
+static int verify_chvatal_comb (atom_info *atoms, CCverify_cutclass *class_)
 {
     int cliquecount = atoms->cliquecount;
     vclique *cliquelist = atoms->cliquelist;
@@ -921,25 +921,25 @@ static int verify_chvatal_comb (atom_info *atoms, CCverify_cutclass *class)
         }
     }
 
-    if (class != (CCverify_cutclass *) NULL) {
-        rval = build_cutclass (class, cliquecount, cliquecount);
+    if (class_ != (CCverify_cutclass *) NULL) {
+        rval = build_cutclass (class_, cliquecount, cliquecount);
         if (rval) {
             fprintf (stderr, "build_cutclass failed\n");
             return 1;
         }
-        class->type = CC_TYPE_COMB;
-        class->nhandles = 1;
-        class->nfamilies = cliquecount;
+        class_->type = CC_TYPE_COMB;
+        class_->nhandles = 1;
+        class_->nfamilies = cliquecount;
         j=0;
-        class->cliques[j] = handle;
-        class->inverted[j] = 0;
-        class->family_start[j] = 0;
+        class_->cliques[j] = handle;
+        class_->inverted[j] = 0;
+        class_->family_start[j] = 0;
         j++;
         for (i=0; i<cliquecount; i++) {
             if (i != handle) {
-                class->cliques[j] = i;
-                class->inverted[j] = cliquelist[i].flipped;
-                class->family_start[j] = j;
+                class_->cliques[j] = i;
+                class_->inverted[j] = cliquelist[i].flipped;
+                class_->family_start[j] = j;
                 j++;
             }
         }
@@ -1352,7 +1352,7 @@ static void flip_clique (vclique *family, vclique *cliq)
 }
 
 static int verify_star (atom_info *atoms, int handnum,
-        CCverify_cutclass *class)
+        CCverify_cutclass *class_)
 {
     vclique *handles = &atoms->family[handnum];
     vclique *teeth = &atoms->family[1-handnum];
@@ -1418,29 +1418,29 @@ static int verify_star (atom_info *atoms, int handnum,
         }
     }
 
-    if (class != (CCverify_cutclass *) NULL) {
-        rval = build_cutclass (class, cliquecount, tcnt+1);
+    if (class_ != (CCverify_cutclass *) NULL) {
+        rval = build_cutclass (class_, cliquecount, tcnt+1);
         if (rval) {
             fprintf (stderr, "build_cutclass failed\n");
             goto CLEANUP;
         }
 #if 0
-        class->type = CC_TYPE_STAR;
-        class->nhandles = 1;
-        class->nfamilies = tcnt + 1;
+        class_->type = CC_TYPE_STAR;
+        class_->nhandles = 1;
+        class_->nfamilies = tcnt + 1;
         cnum = 0;
         fnum = 0;
-        class->family_start[fnum] = cnum;
+        class_->family_start[fnum] = cnum;
         fnum++;
-        class->cliques[cnum] = handle;
-        class->inverted[cnum] = 0;
+        class_->cliques[cnum] = handle;
+        class_->inverted[cnum] = 0;
         cnum++;
         for (i=0; i<cliquecount; i++) {
             if (i != handle) {
-                class->family_start[fnum] = cnum;
+                class_->family_start[fnum] = cnum;
                 fnum++;
-                class->cliques[cnum] = i;
-                class->inverted[cnum] = cliquelist[i].flipped;
+                class_->cliques[cnum] = i;
+                class_->inverted[cnum] = cliquelist[i].flipped;
                 cnum++;
             }
         }
@@ -2045,25 +2045,25 @@ static void clear_clique_marks (atom_info *atoms)
 }
 
 #if 0
-void CCverify_initcutclass (CCverify_cutclass *class)
+void CCverify_initcutclass (CCverify_cutclass *class_)
 {
-    class->type         = 0;
-    class->nhandles     = 0;
-    class->nfamilies    = 0;
-    class->cliques      = (int *) NULL;
-    class->inverted     = (int *) NULL;
-    class->family_start = (int *) NULL;
+    class_->type         = 0;
+    class_->nhandles     = 0;
+    class_->nfamilies    = 0;
+    class_->cliques      = (int *) NULL;
+    class_->inverted     = (int *) NULL;
+    class_->family_start = (int *) NULL;
 }
 
-void CCverify_freecutclass (CCverify_cutclass *class)
+void CCverify_freecutclass (CCverify_cutclass *class_)
 {
-    CC_IFFREE (class->cliques, int);
-    CC_IFFREE (class->inverted, int);
-    CC_IFFREE (class->family_start, int);
-    CCverify_initcutclass (class);
+    CC_IFFREE (class_->cliques, int);
+    CC_IFFREE (class_->inverted, int);
+    CC_IFFREE (class_->family_start, int);
+    CCverify_initcutclass (class_);
 }
 
-int CCverify_classify (CCtsp_lpcut_in *cut, CCverify_cutclass *class)
+int CCverify_classify (CCtsp_lpcut_in *cut, CCverify_cutclass *class_)
 {
     atom_info atoms;
     int rval;
@@ -2076,7 +2076,7 @@ int CCverify_classify (CCtsp_lpcut_in *cut, CCverify_cutclass *class)
     fflush (stdout);
 #endif /* DEBUG */
 
-    class->type = -1;
+    class_->type = -1;
     
     if (cut->skel.atomcount == 0 || cut->skel.atoms == (int *) NULL) {
         fprintf (stderr, "Cut to classify has no skeleton\n");
@@ -2095,7 +2095,7 @@ int CCverify_classify (CCtsp_lpcut_in *cut, CCverify_cutclass *class)
         goto CLEANUP;
     }
 
-    rval = verify_subtour (&atoms, class);
+    rval = verify_subtour (&atoms, class_);
     if (rval == 0) {
         /* It's a valid subtour - we're done */
 #ifdef DEBUG
@@ -2105,7 +2105,7 @@ int CCverify_classify (CCtsp_lpcut_in *cut, CCverify_cutclass *class)
         goto CLEANUP;
     }
 
-    rval = verify_chvatal_comb (&atoms, class);
+    rval = verify_chvatal_comb (&atoms, class_);
     if (rval == 0) {
         /* It's a valid comb - we're done */
 #ifdef DEBUG
@@ -2117,7 +2117,7 @@ int CCverify_classify (CCtsp_lpcut_in *cut, CCverify_cutclass *class)
 
     rval = build_binesting (&atoms);
     if (rval == 0) {
-        rval = verify_star (&atoms, 0, class);
+        rval = verify_star (&atoms, 0, class_);
         if (rval == 0) {
             /* It's a valid star, with handles marked 0 - we're done */
 #ifdef DEBUG
@@ -2129,7 +2129,7 @@ int CCverify_classify (CCtsp_lpcut_in *cut, CCverify_cutclass *class)
             goto CLEANUP;
         }
 
-        rval = verify_star (&atoms, 1, class);
+        rval = verify_star (&atoms, 1, class_);
         if (rval == 0) {
             /* It's a valid star, with handles marked 1 - we're done */
 #ifdef DEBUG
@@ -2207,20 +2207,20 @@ int CCverify_classify (CCtsp_lpcut_in *cut, CCverify_cutclass *class)
 }
 #endif
 
-static int build_cutclass (CCverify_cutclass *class, int ncliques,
+static int build_cutclass (CCverify_cutclass *class_, int ncliques,
         int nfamilies)
 {
-    class->cliques = CC_SAFE_MALLOC (ncliques, int);
-    class->inverted = CC_SAFE_MALLOC (ncliques, int);
-    class->family_start = CC_SAFE_MALLOC (nfamilies, int);
+    class_->cliques = CC_SAFE_MALLOC (ncliques, int);
+    class_->inverted = CC_SAFE_MALLOC (ncliques, int);
+    class_->family_start = CC_SAFE_MALLOC (nfamilies, int);
 
-    if (class->cliques == (int *) NULL ||
-        class->inverted == (int *) NULL ||
-        class->family_start == (int *) NULL) {
+    if (class_->cliques == (int *) NULL ||
+        class_->inverted == (int *) NULL ||
+        class_->family_start == (int *) NULL) {
         fprintf (stderr, "Out of memory in build_cutclass\n");
-        CC_IFFREE (class->cliques, int);
-        CC_IFFREE (class->inverted, int);
-        CC_IFFREE (class->family_start, int);
+        CC_IFFREE (class_->cliques, int);
+        CC_IFFREE (class_->inverted, int);
+        CC_IFFREE (class_->family_start, int);
         return 1;
     }
     return 0;

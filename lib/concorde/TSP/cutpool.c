@@ -210,13 +210,13 @@
 /*    COPIES the cuts from f to t.                                          */
 /*                                                                          */
 /*  int CCtsp_register_cliques (CCtsp_lpcuts *cuts, CCtsp_lpcut_in *c,      */
-/*      CCtsp_lpcut *new)                                                   */
+/*      CCtsp_lpcut *new_)                                                   */
 /*    BUILDS the references to the cliques in c into the cut strucure       */
 /*    pointed to by cuts and creates an array of the indices of the         */
-/*    the cliques in CCtsp_lpcut new                                        */
+/*    the cliques in CCtsp_lpcut new_                                        */
 /*     -cuts is the structure holding the set of cuts                       */
 /*     -c describes the cut to be added to the structure                    */
-/*     -new returns the array of clique indices                             */
+/*     -new_ returns the array of clique indices                             */
 /*                                                                          */
 /*  void CCtsp_unregister_cliques (CCtsp_lpcuts *cuts, CCtsp_lpcut *c)      */
 /*    REMOVES the references to the cliques in cut c (and deletes the       */
@@ -226,10 +226,10 @@
 /*     -c is the cut containing the cliques to be removed                   */
 /*                                                                          */
 /*  int CCtsp_register_dominos (CCtsp_lpcuts *cuts, CCtsp_lpcut_in *c,      */
-/*      CCtsp_lpcut *new)                                                   */
+/*      CCtsp_lpcut *new_)                                                   */
 /*    BUILDS the references to the dominos in c into the cut strucure       */
 /*    pointed to by cuts and creates an array of the indices of the         */
-/*    the dominos in CCtsp_lpcut new                                        */
+/*    the dominos in CCtsp_lpcut new_                                        */
 /*                                                                          */
 /*  void CCtsp_unregister_dominos (CCtsp_lpcuts *cuts, CCtsp_lpcut *c)      */
 /*    REMOVES the references to the dominos in cut c (and deletes the       */
@@ -1906,40 +1906,40 @@ CLEANUP:
 int CCtsp_add_to_cutpool_lpcut_in (CCtsp_lpcuts *pool, CCtsp_lpcut_in *cut)
 {
     int rval = 0;
-    CCtsp_lpcut new;
+    CCtsp_lpcut new_;
     int cutloc;
     unsigned int hval;
 
     if (!pool) goto CLEANUP;
 
-    CCtsp_init_lpcut (&new); 
+    CCtsp_init_lpcut (&new_); 
 
-    new.rhs      = cut->rhs;
-    new.branch   = cut->branch;
-    new.sense    = cut->sense;
+    new_.rhs      = cut->rhs;
+    new_.branch   = cut->branch;
+    new_.sense    = cut->sense;
 
-    rval = CCtsp_register_cliques (pool, cut, &new);
+    rval = CCtsp_register_cliques (pool, cut, &new_);
     CCcheck_rval (rval, "CCtsp_register_cliques failed");
 
-    rval = CCtsp_register_dominos (pool, cut, &new);
+    rval = CCtsp_register_dominos (pool, cut, &new_);
     CCcheck_rval (rval, "CCtsp_register_dominos failed");
 
-    rval = CCtsp_copy_skeleton (&cut->skel, &new.skel);
+    rval = CCtsp_copy_skeleton (&cut->skel, &new_.skel);
     if (rval) {
         fprintf (stderr, "CCtsp_copy_skeleton failed\n");
-        CCtsp_unregister_cliques (pool, &new);
-        CCtsp_unregister_dominos (pool, &new);
+        CCtsp_unregister_cliques (pool, &new_);
+        CCtsp_unregister_dominos (pool, &new_);
         goto CLEANUP;
     }
 
-    sort_cliques (&new);
-    sort_dominos (&new);
+    sort_cliques (&new_);
+    sort_dominos (&new_);
 
-    cutloc = CCtsp_add_cut_to_cutlist (pool, &new);
+    cutloc = CCtsp_add_cut_to_cutlist (pool, &new_);
     if (cutloc < 0) {
         fprintf (stderr, "CCtsp_add_cut_to_cutlist failed\n");
-        CCtsp_unregister_cliques (pool, &new);
-        CCtsp_unregister_dominos (pool, &new);
+        CCtsp_unregister_cliques (pool, &new_);
+        CCtsp_unregister_dominos (pool, &new_);
         rval = cutloc;
         goto CLEANUP;
     }
@@ -2526,20 +2526,20 @@ void CCtsp_free_lpdomino (CCtsp_lpdomino *c)
 }
 
 int CCtsp_register_cliques (CCtsp_lpcuts *cuts, CCtsp_lpcut_in *c,
-        CCtsp_lpcut *new)
+        CCtsp_lpcut *new_)
 {
     int i, j;
 
-    new->cliques = CC_SAFE_MALLOC (c->cliquecount, int);
-    if (!new->cliques) return 1;
-    new->cliquecount = c->cliquecount;
+    new_->cliques = CC_SAFE_MALLOC (c->cliquecount, int);
+    if (!new_->cliques) return 1;
+    new_->cliquecount = c->cliquecount;
     for (i = 0; i < c->cliquecount; i++) {
-        new->cliques[i] = CCtsp_register_clique (cuts, &c->cliques[i]);
-        if (new->cliques[i] == -1) {
+        new_->cliques[i] = CCtsp_register_clique (cuts, &c->cliques[i]);
+        if (new_->cliques[i] == -1) {
             for (j=0; j<i; j++) {
-                CCtsp_unregister_clique (cuts, new->cliques[j]);
+                CCtsp_unregister_clique (cuts, new_->cliques[j]);
             }
-            CC_FREE (new->cliques, int);
+            CC_FREE (new_->cliques, int);
             return 1;
         }
     }
@@ -2558,21 +2558,21 @@ void CCtsp_unregister_cliques (CCtsp_lpcuts *cuts, CCtsp_lpcut *c)
 }
 
 int CCtsp_register_dominos (CCtsp_lpcuts *cuts, CCtsp_lpcut_in *c,
-        CCtsp_lpcut *new)
+        CCtsp_lpcut *new_)
 {
     int i, j;
 
     if (c->dominocount > 0 ) {
-        new->dominos = CC_SAFE_MALLOC (c->dominocount, int);
-        if (!new->dominos) return 1;
-        new->dominocount = c->dominocount;
+        new_->dominos = CC_SAFE_MALLOC (c->dominocount, int);
+        if (!new_->dominos) return 1;
+        new_->dominocount = c->dominocount;
         for (i = 0; i < c->dominocount; i++) {
-            new->dominos[i] = CCtsp_register_domino (cuts, &c->dominos[i]);
-            if (new->dominos[i] == -1) {
+            new_->dominos[i] = CCtsp_register_domino (cuts, &c->dominos[i]);
+            if (new_->dominos[i] == -1) {
                 for (j=0; j<i; j++) {
-                    CCtsp_unregister_domino (cuts, new->dominos[j]);
+                    CCtsp_unregister_domino (cuts, new_->dominos[j]);
                 }
-                CC_FREE (new->dominos, int);
+                CC_FREE (new_->dominos, int);
                 return 1;
             }
         }

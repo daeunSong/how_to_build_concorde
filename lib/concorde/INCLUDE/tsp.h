@@ -682,7 +682,7 @@ int
     CCtsp_clique_to_array (CCtsp_lpclique *c, int **ar, int *count),
     CCtsp_clique_delta (CCtsp_lpgraph *g, double *x, CCtsp_lpclique *c,
         double *delta),
-    CCtsp_copy_lpcut_in (CCtsp_lpcut_in *c, CCtsp_lpcut_in *new),
+    CCtsp_copy_lpcut_in (CCtsp_lpcut_in *c, CCtsp_lpcut_in *new_),
     CCtsp_segment_to_subtour (CCtsp_lpcut_in **cut, int a, int b, int ncount),
     CCtsp_array_to_subtour (CCtsp_lpcut_in **cut, int *ar, int acount,
         int ncount),
@@ -695,9 +695,9 @@ int
     CCtsp_delete_nodes_from_lpclique (CCtsp_lpclique *cin,
          CCtsp_lpclique *cout, int delcount, int *del),
     CCtsp_lpcut_to_lpcut_in (CCtsp_lpcuts *cuts, CCtsp_lpcut *c,
-        CCtsp_lpcut_in *new),
-    CCtsp_copy_lpclique (CCtsp_lpclique *c, CCtsp_lpclique *new),
-    CCtsp_copy_lpdomino (CCtsp_lpdomino *c, CCtsp_lpdomino *new),
+        CCtsp_lpcut_in *new_),
+    CCtsp_copy_lpclique (CCtsp_lpclique *c, CCtsp_lpclique *new_),
+    CCtsp_copy_lpdomino (CCtsp_lpdomino *c, CCtsp_lpdomino *new_),
     CCtsp_create_lpcliques (CCtsp_lpcut_in *c, int cliquecount),
     CCtsp_max_node (CCtsp_lpcut_in *c),
     CCtsp_build_dp_cut (CCtsp_lpcut_in **cut, int ndomino, int *Acount,
@@ -900,9 +900,9 @@ int
     CCtsp_price_cuts_threaded (CCtsp_lpcuts *pool, int ncount, int ecount,
         int *elist, double *x, double *cutval, int numthreads),
     CCtsp_register_cliques (CCtsp_lpcuts *cuts, CCtsp_lpcut_in *c,
-        CCtsp_lpcut *new),
+        CCtsp_lpcut *new_),
     CCtsp_register_dominos (CCtsp_lpcuts *cuts, CCtsp_lpcut_in *c,
-        CCtsp_lpcut *new),
+        CCtsp_lpcut *new_),
     CCtsp_add_cut_to_cutlist (CCtsp_lpcuts *cuts, CCtsp_lpcut *c);
 
 void
@@ -1178,7 +1178,7 @@ int
 
 
 int
-    CCtsp_copy_skeleton (CCtsp_skeleton *old, CCtsp_skeleton *new),
+    CCtsp_copy_skeleton (CCtsp_skeleton *old, CCtsp_skeleton *new_),
     CCtsp_construct_skeleton (CCtsp_lpcut_in *c, int nodecount),
     CCtsp_read_skeleton (CC_SFILE *f, CCtsp_skeleton *skel, int ncount),
     CCtsp_write_skeleton (CC_SFILE *f, CCtsp_skeleton *skel, int ncount);

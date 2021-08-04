@@ -38,7 +38,7 @@
 /*  void CCtsp_free_skeleton (CCtsp_skeleton *skel)                         */
 /*    FREES the memory used by skel                                         */
 /*                                                                          */
-/*  int CCtsp_copy_skeleton (CCtsp_skeleton *old, CCtsp_skeleton *new)      */
+/*  int CCtsp_copy_skeleton (CCtsp_skeleton *old, CCtsp_skeleton *new_)      */
 /*    COPIES a skeleton                                                     */
 /*                                                                          */
 /*  int CCtsp_read_skeleton (CC_SFILE *f, CCtsp_skeleton *skel,             */
@@ -81,22 +81,22 @@ void CCtsp_free_skeleton (CCtsp_skeleton *skel)
     }
 }
 
-int CCtsp_copy_skeleton (CCtsp_skeleton *old, CCtsp_skeleton *new)
+int CCtsp_copy_skeleton (CCtsp_skeleton *old, CCtsp_skeleton *new_)
 {
     int i;
 
-    CCtsp_init_skeleton (new);
+    CCtsp_init_skeleton (new_);
 
     if (old->atomcount == 0) return 0;
-    new->atoms = CC_SAFE_MALLOC (old->atomcount, int);
-    if (new->atoms == (int *) NULL) {
+    new_->atoms = CC_SAFE_MALLOC (old->atomcount, int);
+    if (new_->atoms == (int *) NULL) {
         fprintf (stderr, "Out of memory in CCtsp_copy_skeleton\n");
         return 1;
     }
     for (i=0; i<old->atomcount; i++) {
-        new->atoms[i] = old->atoms[i];
+        new_->atoms[i] = old->atoms[i];
     }
-    new->atomcount = old->atomcount;
+    new_->atomcount = old->atomcount;
 
     return 0;
 }

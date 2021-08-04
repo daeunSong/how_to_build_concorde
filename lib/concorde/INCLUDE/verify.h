@@ -41,11 +41,11 @@ typedef struct CCverify_cutclass {
 int
     CCverify_cut (CCtsp_lpcut_in *cut, int check_types, int *type),
     CCverify_classify (CCtsp_lpcut_in *cut, int check_types,
-        CCverify_cutclass *class);
+        CCverify_cutclass *class_);
 
 void
-    CCverify_initcutclass (CCverify_cutclass *class),
-    CCverify_freecutclass (CCverify_cutclass *class);
+    CCverify_initcutclass (CCverify_cutclass *class_),
+    CCverify_freecutclass (CCverify_cutclass *class_);
 
 
 #endif  /* __VERIFY_H */

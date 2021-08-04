@@ -116,7 +116,7 @@ int CCtsp_register_clique (CCtsp_lpcuts *cuts, CCtsp_lpclique *c)
 {
     int x = CCtsp_hashclique (c) % cuts->cliquehashsize;
     int y = cuts->cliquehash[x];
-    CCtsp_segment *new = (CCtsp_segment *) NULL;
+    CCtsp_segment *new_ = (CCtsp_segment *) NULL;
     int i;
     int test;
 
@@ -129,8 +129,8 @@ int CCtsp_register_clique (CCtsp_lpcuts *cuts, CCtsp_lpclique *c)
         y = cuts->cliques[y].hashnext;
     }
 
-    new = CC_SAFE_MALLOC (c->segcount, CCtsp_segment);
-    if (!new) {
+    new_ = CC_SAFE_MALLOC (c->segcount, CCtsp_segment);
+    if (!new_) {
         fprintf (stderr, "out of memory in CCtsp_register_clique\n");
         return -1;
     }
@@ -143,7 +143,7 @@ int CCtsp_register_clique (CCtsp_lpcuts *cuts, CCtsp_lpclique *c)
             if (CCutil_reallocrus_scale ((void **) &cuts->cliques,
                     &cuts->cliquespace, cuts->cliqueend + 1, 1.3,
                     sizeof (CCtsp_lpclique))) {
-                CC_FREE (new, CCtsp_segment);
+                CC_FREE (new_, CCtsp_segment);
                 return -1;
             }
         }
@@ -151,9 +151,9 @@ int CCtsp_register_clique (CCtsp_lpcuts *cuts, CCtsp_lpclique *c)
     }
     cuts->cliques[y].segcount = c->segcount;
     for (i=0; i<c->segcount; i++) {
-        new[i] = c->nodes[i];
+        new_[i] = c->nodes[i];
     }
-    cuts->cliques[y].nodes = new;
+    cuts->cliques[y].nodes = new_;
     cuts->cliques[y].refcount = 1;
     cuts->cliques[y].hashnext = cuts->cliquehash[x];
     cuts->cliquehash[x] = y;
@@ -244,12 +244,12 @@ int CCtsp_register_domino (CCtsp_lpcuts *cuts, CCtsp_lpdomino *c)
 {
     int x = CCtsp_hashdomino (c) % cuts->dominohashsize;
     int y = cuts->dominohash[x];
-    CCtsp_segment *new[2];
+    CCtsp_segment *new_[2];
     int i, k;
     int test;
 
     for (k = 0; k < 2; k++) {
-        new[k] = (CCtsp_segment *) NULL;
+        new_[k] = (CCtsp_segment *) NULL;
     }
 
     while (y != -1) {
@@ -262,10 +262,10 @@ int CCtsp_register_domino (CCtsp_lpcuts *cuts, CCtsp_lpdomino *c)
     }
 
     for (k = 0; k < 2; k++) {
-        new[k] = CC_SAFE_MALLOC (c->sets[k].segcount, CCtsp_segment);
-        if (!new[k]) {
+        new_[k] = CC_SAFE_MALLOC (c->sets[k].segcount, CCtsp_segment);
+        if (!new_[k]) {
             fprintf (stderr, "out of memory in CCtsp_register_domino\n");
-            if (k == 1) { CC_FREE (new[0], CCtsp_segment); }
+            if (k == 1) { CC_FREE (new_[0], CCtsp_segment); }
             return -1;
         }
     }
@@ -278,8 +278,8 @@ int CCtsp_register_domino (CCtsp_lpcuts *cuts, CCtsp_lpdomino *c)
             if (CCutil_reallocrus_scale ((void **) &cuts->dominos,
                     &cuts->dominospace, cuts->dominoend + 1, 1.3,
                     sizeof (CCtsp_lpdomino))) {
-                CC_FREE (new[0], CCtsp_segment);
-                CC_FREE (new[1], CCtsp_segment);
+                CC_FREE (new_[0], CCtsp_segment);
+                CC_FREE (new_[1], CCtsp_segment);
                 return -1;
             }
         }
@@ -289,9 +289,9 @@ int CCtsp_register_domino (CCtsp_lpcuts *cuts, CCtsp_lpdomino *c)
     for (k = 0; k < 2; k++) {
         cuts->dominos[y].sets[k].segcount = c->sets[k].segcount;
         for (i = 0; i < c->sets[k].segcount; i++) {
-            new[k][i] = c->sets[k].nodes[i];
+            new_[k][i] = c->sets[k].nodes[i];
         }
-        cuts->dominos[y].sets[k].nodes = new[k];
+        cuts->dominos[y].sets[k].nodes = new_[k];
         cuts->dominos[y].sets[k].hashnext = 0;   /* Not used */
         cuts->dominos[y].sets[k].refcount = 0;   /* Not used */
     }
