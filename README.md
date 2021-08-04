@@ -2,7 +2,7 @@
 
 This repository presents a brief instruction on how to build [Concorde](http://www.math.uwaterloo.ca/tsp/concorde/) in Linux environment, also using the linear programming solver [QSopt](https://www.math.uwaterloo.ca/~bico/qsopt/) with a simple TSP example. 
 
-### Build and Run
+## Build and Run
 
 1. Build Concorde
     ```sh
@@ -23,7 +23,7 @@ This repository presents a brief instruction on how to build [Concorde](http://w
    ./concordeTest
    ```
 
-### Technical Notes
+## Technical Notes
 
 The source of Concorde contained in `/lib/concorde` directory differs from the original source. The original source code contains some identifiers named `new` and `class`, which are the reserved names in C++. Please keep in mind that you need to fix them if you wish to build from the original source by yourself. 
 
