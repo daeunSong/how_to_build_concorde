@@ -3,20 +3,28 @@
 This repository presents a brief instruction on how to build [Concorde](http://www.math.uwaterloo.ca/tsp/concorde/) in Linux environment, also using the linear programming solver [QSopt](https://www.math.uwaterloo.ca/~bico/qsopt/) with a simple TSP example. 
 
 ## Build and Run
+1. Clone the repository in your workspace
+   ```sh
+   git clone https://github.com/daeunSong/how_to_build_concorde.git
+   cd how_to_build_concorde 
+   export DIR=$(pwd)
+   ```
+   Save your repository path in `DIR`, which will be used for the next steps.
 
-1. Build Concorde
+
+2. Build Concorde
     ```sh
     cd lib/concorde
-    ./configure --with-qsopt=DIR
+    ./configure --with-qsopt=$DIR/lib/qsopt
     make -j4
     ```
-    `DIR` is a full path to the `/lib/qsopt` directory of the current repository. This will create `concorde.h` and `concorde.a` file.
+    This will create the files `concorde.h` and `concorde.a`.
 
 
-2. Build and run the project 
+3. Build and run the project 
 
    ```sh
-   cd ../..
+   cd $DIR
    mkdir build && cd build
    cmake ..
    make -j4
@@ -29,4 +37,4 @@ The source of Concorde contained in `/lib/concorde` directory differs from the o
 
 ### References
 - Concorde solver installation and use ([link](https://www.researchgate.net/publication/324485167_Concorde_solver_installation_and_use))
-- concorde-easy-builde ([link](https://github.com/alberto-santini/concorde-easy-build))
+- concorde-easy-build ([link](https://github.com/alberto-santini/concorde-easy-build))
